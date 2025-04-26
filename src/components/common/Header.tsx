@@ -15,7 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Header = () => {
+// Add prop types
+interface HeaderProps {
+  scrollToCarePlan?: () => void;
+  scrollToResources?: () => void;
+}
+
+const Header = ({ scrollToCarePlan, scrollToResources }: HeaderProps) => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { language, setLanguage } = useLanguage();
@@ -61,14 +67,14 @@ const Header = () => {
               <Button
                 variant="ghost"
                 className="font-medium"
-                onClick={() => navigate("/care-plan")}
+                onClick={scrollToCarePlan ? scrollToCarePlan : () => navigate("/care-plan")}
               >
                 Care Plan
               </Button>
               <Button
                 variant="ghost"
                 className="font-medium"
-                onClick={() => navigate("/education")}
+                onClick={scrollToResources ? scrollToResources : () => navigate("/education")}
               >
                 Resources
               </Button>
@@ -203,14 +209,14 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   className="justify-start"
-                  onClick={() => handleNavigate("/care-plan")}
+                  onClick={scrollToCarePlan ? scrollToCarePlan : () => handleNavigate("/care-plan")}
                 >
                   Care Plan
                 </Button>
                 <Button
                   variant="ghost"
                   className="justify-start"
-                  onClick={() => handleNavigate("/education")}
+                  onClick={scrollToResources ? scrollToResources : () => handleNavigate("/education")}
                 >
                   Resources
                 </Button>

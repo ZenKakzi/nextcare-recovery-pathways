@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const TASKS = [
   { id: 1, label: "Take morning medication", icon: <AlertTriangle className="h-4 w-4 text-nextcare-warning" /> },
@@ -13,6 +14,7 @@ const TASKS = [
 
 const CarePlanCard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [done, setDone] = useState<boolean[]>(Array(TASKS.length).fill(false));
   const completedTasks = done.filter(Boolean).length;
   const totalTasks = TASKS.length;
@@ -99,7 +101,7 @@ const CarePlanCard = () => {
         
         <Button 
           className="w-full bg-nextcare-primary hover:bg-nextcare-dark"
-          onClick={() => navigate("/care-plan")}
+          onClick={() => toast({ title: "This feature isn't unlocked yet" })}
         >
           View Full Care Plan
         </Button>

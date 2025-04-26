@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/common/Layout";
 import RiskScoreCard from "@/components/dashboard/RiskScoreCard";
@@ -73,6 +73,8 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [showRiskDetails, setShowRiskDetails] = useState(false);
   const [showArticle, setShowArticle] = useState<{title: string, body: string} | null>(null);
+  const carePlanRef = useRef<HTMLDivElement>(null);
+  const resourcesRef = useRef<HTMLDivElement>(null);
 
   // Sample data
   const riskScore = 42; // 0-100
@@ -143,8 +145,17 @@ const Dashboard = () => {
     });
   };
 
+  // Handler to scroll to Care Plan
+  const scrollToCarePlan = () => {
+    carePlanRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  // Handler to scroll to Resources
+  const scrollToResources = () => {
+    resourcesRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <Layout isAuthenticated={true}>
+    <Layout isAuthenticated={true} scrollToCarePlan={scrollToCarePlan} scrollToResources={scrollToResources}>
       <div className="nextcare-container py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Welcome Back, {user?.username || "User"}</h1>
@@ -161,7 +172,7 @@ const Dashboard = () => {
           </div>
           
           {/* Care Plan */}
-          <div className="xl:col-span-1">
+          <div className="xl:col-span-1" ref={carePlanRef}>
             <CarePlanCard completedTasks={3} totalTasks={6} />
           </div>
           
@@ -174,7 +185,7 @@ const Dashboard = () => {
           </div>
           
           {/* Resources */}
-          <div className="md:col-span-2 xl:col-span-3">
+          <div className="md:col-span-2 xl:col-span-3" ref={resourcesRef}>
             <HealthResourceCard resources={resourcesData} onResourceClick={(resource) => {
               if (resource.url) {
                 window.open(resource.url, "_blank");
