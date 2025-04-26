@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X, Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -17,6 +18,7 @@ import {
 const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleNavigate = (path: string) => {
@@ -91,8 +93,21 @@ const Header = () => {
           )}
         </nav>
 
-        {/* User Actions */}
+        {/* User Actions & Language Switcher */}
         <div className="flex items-center gap-2">
+          {/* Language Switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="ml-2">
+                {language === "en" ? "English" : "Latviešu"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setLanguage("en")}>English</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage("lv")}>Latviešu</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {isAuthenticated ? (
             <>
               <DropdownMenu>

@@ -1,11 +1,47 @@
-
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/common/Layout";
 import { CheckCircle2, ArrowRight, BarChart3, CalendarClock, ShieldCheck } from "lucide-react";
+import HealthResourceCard from "@/components/dashboard/HealthResourceCard";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+
+const ARTICLE1_TITLE = "Eat for a Happy Heart: Delicious Dishes That Keep Your Ticker Ticking";
+const ARTICLE1_BODY = `Hello there, proud owner of a heart that needs a bit of VIP treatment!
+ ... (rest of article 1) ...`;
+const ARTICLE2_TITLE = "Busted! Common Heart Disease Myths That Could Literally Break Your Heart";
+const ARTICLE2_BODY = `Hey there, my fellow warriors with sensitive little hearts!
+ ... (rest of article 2) ...`;
+const YOUTUBE_URL = "https://youtu.be/XprmCVflDTY";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [showArticle, setShowArticle] = useState<{title: string, body: string} | null>(null);
+
+  const resourcesData = [
+    {
+      id: "res1",
+      title: ARTICLE1_TITLE,
+      type: "article" as const,
+      description: "A kitchen adventure for your heart!",
+      body: ARTICLE1_BODY,
+    },
+    {
+      id: "res2",
+      title: ARTICLE2_TITLE,
+      type: "guide" as const,
+      description: "Busting heart disease myths that could backfire!",
+      body: ARTICLE2_BODY,
+    },
+    {
+      id: "res3",
+      title: "Heart-Healthy Cooking",
+      type: "video" as const,
+      description: "Simple cooking demonstrations for heart-healthy meals.",
+      body: "",
+      url: YOUTUBE_URL,
+    }
+  ];
 
   return (
     <Layout>
@@ -236,6 +272,26 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">All Resources</h2>
+        <HealthResourceCard resources={resourcesData} onResourceClick={(resource) => {
+          if (resource.url) {
+            window.open(resource.url, "_blank");
+          } else if (resource.body) {
+            setShowArticle({title: resource.title, body: resource.body});
+          }
+        }} />
+      </section>
+
+      <Dialog open={!!showArticle} onOpenChange={() => setShowArticle(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{showArticle?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="whitespace-pre-line text-sm">{showArticle?.body}</div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };

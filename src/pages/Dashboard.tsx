@@ -66,6 +66,8 @@ Don't wait for your heart to scream before you start caring.
 
 Good food + regular exercise = the secret potion for a heart that stays young and happy!`;
 
+const YOUTUBE_URL = "https://youtu.be/XprmCVflDTY";
+
 const Dashboard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -130,6 +132,7 @@ const Dashboard = () => {
       type: "video" as const,
       description: "Simple cooking demonstrations for heart-healthy meals.",
       body: "",
+      url: YOUTUBE_URL,
     }
   ];
 
@@ -173,7 +176,11 @@ const Dashboard = () => {
           {/* Resources */}
           <div className="md:col-span-2 xl:col-span-3">
             <HealthResourceCard resources={resourcesData} onResourceClick={(resource) => {
-              if (resource.body) setShowArticle({title: resource.title, body: resource.body});
+              if (resource.url) {
+                window.open(resource.url, "_blank");
+              } else if (resource.body) {
+                setShowArticle({title: resource.title, body: resource.body});
+              }
             }} />
           </div>
         </div>
