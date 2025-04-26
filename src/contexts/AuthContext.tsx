@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 interface User {
   email: string;
   username?: string;
-  age?: string;
+  dateOfBirth?: string;
   gender?: string;
   password?: string;
   isAdmin?: boolean;
@@ -15,7 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, password: string, username: string, age: string, gender: string) => Promise<void>;
+  register: (email: string, password: string, username: string, dateOfBirth: string, gender: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -68,9 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate("/login");
   };
 
-  const register = async (email: string, password: string, username: string, age: string, gender: string) => {
+  const register = async (email: string, password: string, username: string, dateOfBirth: string, gender: string) => {
     try {
-      const userData: User = { email, username, age, gender, password, isAdmin: false };
+      const userData: User = { email, username, dateOfBirth, gender, password, isAdmin: false };
       // Add to users array in localStorage
       const users = JSON.parse(localStorage.getItem("users") || "[]");
       users.push(userData);

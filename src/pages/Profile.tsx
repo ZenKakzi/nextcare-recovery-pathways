@@ -55,6 +55,20 @@ function calculateSystemScores(conditions: string[] = []) {
   return scores;
 }
 
+// Utility to calculate age from date string
+function calculateAge(dateOfBirth?: string): string | number {
+  if (!dateOfBirth) return "-";
+  const dob = new Date(dateOfBirth);
+  if (isNaN(dob.getTime())) return "-";
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 const Profile = () => {
   const { user } = useAuth();
   // Type guard for medicalConditions
@@ -78,7 +92,7 @@ const Profile = () => {
           </div>
           <div className="mb-4">
             <span className="block text-muted-foreground text-sm mb-1">Age</span>
-            <span className="font-medium text-lg">{user?.age || "-"}</span>
+            <span className="font-medium text-lg">{calculateAge(user?.dateOfBirth)}</span>
           </div>
           <div className="mb-4">
             <span className="block text-muted-foreground text-sm mb-1">Gender</span>
