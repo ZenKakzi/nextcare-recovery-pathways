@@ -6,7 +6,8 @@ interface User {
   username?: string;
   age?: string;
   gender?: string;
-  // Add other user properties as needed
+  password?: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
@@ -35,20 +36,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      // In a real app, this would be an API call
-      // For now, we'll simulate a successful login
-      const storedUser = localStorage.getItem("user");
-      let userData: User = { email };
-      if (storedUser) {
-        const parsed = JSON.parse(storedUser);
-        if (parsed.email === email) {
-          userData = parsed;
-        }
+      // Admin login
+      if (email === "admin" && password === "admin") {
+        const adminUser = { email: "admin", username: "admin", isAdmin: true };
+        localStorage.setItem("user", JSON.stringify(adminUser));
+        setUser(adminUser);
+        setIsAuthenticated(true);
+        navigate("/admin");
+        return;
       }
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-      setIsAuthenticated(true);
-      navigate("/dashboard");
+      // Patient login
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const found = users.find((u: User) => u.email === email && u.password === password);
+      if (found) {
+        localStorage.setItem("user", JSON.stringify(found));
+        setUser(found);
+        setIsAuthenticated(true);
+        navigate("/dashboard");
+      } else {
+        throw new Error("Invalid credentials");
+      }
     } catch (error) {
       throw error;
     }
@@ -63,9 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string, username: string, age: string, gender: string) => {
     try {
-      // In a real app, this would be an API call
-      // For now, we'll simulate a successful registration
-      const userData = { email, username, age, gender };
+      const userData: User = { email, username, age, gender, password, isAdmin: false };
+      // Add to users array in localStorage
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.push(userData);
+      localStorage.setItem("users", JSON.stringify(users));
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
       setIsAuthenticated(true);

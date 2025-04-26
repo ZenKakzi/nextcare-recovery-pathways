@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Book, Video, FileText, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,13 +8,15 @@ interface Resource {
   title: string;
   type: "article" | "video" | "guide";
   description: string;
+  body?: string;
 }
 
 interface HealthResourceCardProps {
   resources: Resource[];
+  onResourceClick?: (resource: Resource) => void;
 }
 
-const HealthResourceCard = ({ resources }: HealthResourceCardProps) => {
+const HealthResourceCard = ({ resources, onResourceClick }: HealthResourceCardProps) => {
   const navigate = useNavigate();
   
   const getIcon = (type: string) => {
@@ -58,7 +59,7 @@ const HealthResourceCard = ({ resources }: HealthResourceCardProps) => {
             <div
               key={resource.id}
               className="flex items-start space-x-4 p-3 border rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
-              onClick={() => navigate(`/education/${resource.id}`)}
+              onClick={() => onResourceClick ? onResourceClick(resource) : navigate(`/education/${resource.id}`)}
             >
               <div className={`rounded-full p-2 ${getIconBg(resource.type)}`}>
                 {getIcon(resource.type)}

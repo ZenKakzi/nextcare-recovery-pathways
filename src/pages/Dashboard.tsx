@@ -10,10 +10,67 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
+const ARTICLE1_TITLE = "Eat for a Happy Heart: Delicious Dishes That Keep Your Ticker Ticking";
+const ARTICLE1_BODY = `Hello there, proud owner of a heart that needs a bit of VIP treatment!
+ If your heart's been feeling a little "meh" thanks to cholesterol, high blood pressure, or everyday life stress, don't worry! Today, I'll take you on a kitchen adventure — cooking mouthwatering dishes that'll make your heart dance with joy!
+1. Fatty Fish – Get Your Heart Grooving
+Top picks: Salmon, mackerel, sardines.
+
+Why it's good: Packed with Omega-3s, which fight inflammation and prevent clogged arteries.
+
+Tasty tips:
+
+Lightly pan-sear with green pepper and a squeeze of fresh lemon.
+Or wrap it in foil with veggies and a honey glaze for an irresistible oven treat.
+
+2. Avocado – More Than Just a Fancy Guacamole Base
+Why it's good: Full of heart-healthy monounsaturated fats that lower bad cholesterol.
+
+Trendy ways to eat:
+
+Mash it into a creamy salad dressing.
+Spread on whole-grain toast, sprinkle some chia seeds — healthy but make it fashion.
+3. Oats – The Breakfast MVP for Heart Health
+Why it's good: Rich in beta-glucan, a fiber that lowers cholesterol like a charm.
+
+How to keep it exciting:
+
+Classic oatmeal with fresh fruits and a drizzle of honey.
+Overnight oats with almond milk for the busy bees out there.
+4. Dark Leafy Greens – Nature's Heart Guardians
+Top picks: Spinach, kale, bok choy.
+
+Why it's good: Loaded with natural nitrates that gently lower blood pressure.
+
+Tasty ideas:
+
+Toss into a salad with olive oil.
+Lightly stir-fry with garlic (easy on the oil, please!).`;
+
+const ARTICLE2_TITLE = "Busted! Common Heart Disease Myths That Could Literally Break Your Heart";
+const ARTICLE2_BODY = `Hey there, my fellow warriors with sensitive little hearts!
+ Today, let's bust some urban legends about heart disease that sound convincing... but could actually backfire big time!
+1. "I'm strong like an ox — no heart problems for me!"
+The truth: Heart disease doesn't care how many push-ups you can do. If you chase it down with three bowls of beef noodle soup at midnight... well, good luck, buddy.
+
+2. "Heart disease only happens to old people."
+The truth: Not anymore! Thanks to stress, late nights, boba tea, and fried everything, heart disease is getting disturbingly younger.
+
+3. "As long as I take my meds, I can eat anything!"
+The truth: Meds help, sure — but if your diet is a daily double of fried chicken + double topping milk tea... even your doctor will run out of prayers.
+4. "No symptoms = No problem."
+The truth: 50% of heart attacks come with zero warning signs. It's like getting ghosted by your crush — no notice, just... pain.
+
+🌟 Moral of the story:
+Don't wait for your heart to scream before you start caring.
+
+Good food + regular exercise = the secret potion for a heart that stays young and happy!`;
+
 const Dashboard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [showRiskDetails, setShowRiskDetails] = useState(false);
+  const [showArticle, setShowArticle] = useState<{title: string, body: string} | null>(null);
 
   // Sample data
   const riskScore = 42; // 0-100
@@ -55,21 +112,24 @@ const Dashboard = () => {
   const resourcesData = [
     {
       id: "res1",
-      title: "Understanding Heart Disease",
+      title: ARTICLE1_TITLE,
       type: "article" as const,
-      description: "Learn about the basics of heart disease and how to manage symptoms effectively."
+      description: "A kitchen adventure for your heart!",
+      body: ARTICLE1_BODY,
     },
     {
       id: "res2",
-      title: "Medication Management Guide",
+      title: ARTICLE2_TITLE,
       type: "guide" as const,
-      description: "Tips and tools to help you remember and manage your medications."
+      description: "Busting heart disease myths that could backfire!",
+      body: ARTICLE2_BODY,
     },
     {
       id: "res3",
       title: "Heart-Healthy Cooking",
       type: "video" as const,
-      description: "Simple cooking demonstrations for heart-healthy meals."
+      description: "Simple cooking demonstrations for heart-healthy meals.",
+      body: "",
     }
   ];
 
@@ -112,10 +172,22 @@ const Dashboard = () => {
           
           {/* Resources */}
           <div className="md:col-span-2 xl:col-span-3">
-            <HealthResourceCard resources={resourcesData} />
+            <HealthResourceCard resources={resourcesData} onResourceClick={(resource) => {
+              if (resource.body) setShowArticle({title: resource.title, body: resource.body});
+            }} />
           </div>
         </div>
       </div>
+
+      {/* Article Dialog */}
+      <Dialog open={!!showArticle} onOpenChange={() => setShowArticle(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{showArticle?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="whitespace-pre-line text-sm">{showArticle?.body}</div>
+        </DialogContent>
+      </Dialog>
 
       {/* Risk Details Dialog */}
       <Dialog open={showRiskDetails} onOpenChange={setShowRiskDetails}>

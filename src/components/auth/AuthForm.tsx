@@ -21,8 +21,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
     password: "",
     confirmPassword: "",
     username: "",
-    age: "",
-    gender: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,15 +28,30 @@ const AuthForm = ({ type }: AuthFormProps) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  function isValidEmail(email: string) {
+    if (type === "login" && email === "admin") return true;
+    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
     // Simple validation
-    if (!formData.email || !formData.password || (type === "register" && (!formData.username || !formData.age || !formData.gender))) {
+    if (!formData.email || !formData.password || (type === "register" && !formData.username)) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
         variant: "destructive",
       });
       setLoading(false);
@@ -63,7 +76,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
           description: "You have successfully logged in.",
         });
       } else {
-        await register(formData.email, formData.password, formData.username, formData.age, formData.gender);
+        await register(formData.email, formData.password, formData.username, "", "");
         toast({
           title: "Account created!",
           description: "Please complete your profile to continue.",
@@ -95,57 +108,26 @@ const AuthForm = ({ type }: AuthFormProps) => {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {type === "register" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  placeholder="Enter your name"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
-                <Input
-                  id="age"
-                  name="age"
-                  type="number"
-                  min="0"
-                  placeholder="Enter your age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <select
-                  id="gender"
-                  name="gender"
-                  className="w-full border rounded px-3 py-2"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </>
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Enter your name"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
           )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               name="email"
-              type="email"
-              placeholder="your.email@example.com"
+              type="text"
+              placeholder={type === "login" ? "Email or 'admin'" : "your.email@example.com"}
               value={formData.email}
               onChange={handleChange}
               required
