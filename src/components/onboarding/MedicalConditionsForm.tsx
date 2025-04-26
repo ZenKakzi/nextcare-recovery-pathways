@@ -82,7 +82,7 @@ const MedicalConditionsForm = ({ onNext, onBack }: MedicalConditionsFormProps) =
             <div 
               key={condition.id}
               className="flex items-center space-x-3 border rounded-md p-3 cursor-pointer hover:bg-muted/50 transition-colors"
-              onClick={() => toggleCondition(condition.id)}
+              // Remove the onClick handler from here to avoid double toggling
             >
               <Checkbox 
                 id={condition.id}
@@ -92,6 +92,7 @@ const MedicalConditionsForm = ({ onNext, onBack }: MedicalConditionsFormProps) =
               <Label 
                 htmlFor={condition.id}
                 className="flex-1 cursor-pointer"
+                onClick={() => toggleCondition(condition.id)}
               >
                 {condition.label}
               </Label>
