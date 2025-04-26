@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,18 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// NextCare specific colors
+				nextcare: {
+					primary: '#1E88E5',     // Main blue
+					secondary: '#26A69A',    // Complementary teal
+					dark: '#0D47A1',        // Dark blue for emphasis
+					light: '#E3F2FD',       // Light blue background
+					accent: '#FFB74D',      // Orange accent for warnings/alerts
+					success: '#66BB6A',      // Green for positive indicators
+					warning: '#FFA726',      // Amber for caution
+					error: '#EF5350',        // Red for errors
+					gray: '#78909C'         // Neutral gray for text
 				}
 			},
 			borderRadius: {
@@ -84,12 +97,33 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'fade-in': {
+					'0%': {
+					  opacity: '0'
+					},
+					'100%': {
+					  opacity: '1'
+					},
+				},
+				'pulse-light': {
+					'0%, 100%': {
+					  opacity: '1'
+					},
+					'50%': {
+					  opacity: '0.7'
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'pulse-light': 'pulse-light 2s ease-in-out infinite',
+			},
+			fontFamily: {
+				sans: ['Inter', 'sans-serif']
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
