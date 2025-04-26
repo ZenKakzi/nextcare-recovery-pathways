@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,14 +14,18 @@ interface AuthFormProps {
 const AuthForm = ({ type }: AuthFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, register } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
+    username: "",
+    age: "",
+    gender: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -31,7 +35,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
     setLoading(true);
     
     // Simple validation
-    if (!formData.email || !formData.password) {
+    if (!formData.email || !formData.password || (type === "register" && (!formData.username || !formData.age || !formData.gender))) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields.",
@@ -52,34 +56,27 @@ const AuthForm = ({ type }: AuthFormProps) => {
     }
 
     try {
-      // In a real app, this would connect to an auth API
-      console.log("Form submitted:", formData);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setLoading(false);
-        
-        if (type === "login") {
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully logged in.",
-          });
-          navigate("/dashboard");
-        } else {
-          toast({
-            title: "Account created!",
-            description: "Please complete your profile to continue.",
-          });
-          navigate("/onboarding");
-        }
-      }, 1500);
+      if (type === "login") {
+        await login(formData.email, formData.password);
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+      } else {
+        await register(formData.email, formData.password, formData.username, formData.age, formData.gender);
+        toast({
+          title: "Account created!",
+          description: "Please complete your profile to continue.",
+        });
+      }
     } catch (error) {
-      setLoading(false);
       toast({
         title: "Something went wrong",
         description: "Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +94,51 @@ const AuthForm = ({ type }: AuthFormProps) => {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
+          {type === "register" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Enter your name"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  id="age"
+                  name="age"
+                  type="number"
+                  min="0"
+                  placeholder="Enter your age"
+                  value={formData.age}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <select
+                  id="gender"
+                  name="gender"
+                  className="w-full border rounded px-3 py-2"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input

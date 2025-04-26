@@ -1,16 +1,18 @@
-
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/common/Layout";
 import RiskScoreCard from "@/components/dashboard/RiskScoreCard";
 import CarePlanCard from "@/components/dashboard/CarePlanCard";
 import UpcomingAppointmentsCard from "@/components/dashboard/UpcomingAppointmentsCard";
 import HealthResourceCard from "@/components/dashboard/HealthResourceCard";
+import DailyInsights from "@/components/dashboard/DailyInsights";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [showRiskDetails, setShowRiskDetails] = useState(false);
 
   // Sample data
@@ -82,10 +84,10 @@ const Dashboard = () => {
     <Layout isAuthenticated={true}>
       <div className="nextcare-container py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold">Welcome Back, John</h1>
+          <h1 className="text-3xl font-bold">Welcome Back, {user?.username || "User"}</h1>
           <p className="text-muted-foreground">Here's an overview of your health status and care plan.</p>
         </div>
-        
+        <DailyInsights />
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Risk Score */}
           <div className="xl:col-span-1">

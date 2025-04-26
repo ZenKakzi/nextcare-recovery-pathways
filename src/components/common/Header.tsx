@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Menu, X, Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -14,12 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface HeaderProps {
-  isAuthenticated?: boolean;
-}
-
-const Header = ({ isAuthenticated = false }: HeaderProps) => {
+const Header = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleNavigate = (path: string) => {
@@ -41,7 +38,7 @@ const Header = ({ isAuthenticated = false }: HeaderProps) => {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center gap-4">
           <Button
             variant="ghost"
             className="font-medium"
@@ -95,7 +92,7 @@ const Header = ({ isAuthenticated = false }: HeaderProps) => {
         </nav>
 
         {/* User Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {isAuthenticated ? (
             <>
               <DropdownMenu>
@@ -118,7 +115,7 @@ const Header = ({ isAuthenticated = false }: HeaderProps) => {
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-nextcare-primary text-white">
-                        JD
+                        {user?.email?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -133,7 +130,7 @@ const Header = ({ isAuthenticated = false }: HeaderProps) => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/login")}>
+                  <DropdownMenuItem onClick={logout}>
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -209,6 +206,13 @@ const Header = ({ isAuthenticated = false }: HeaderProps) => {
                 >
                   Profile
                 </Button>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={logout}
+                >
+                  Log out
+                </Button>
               </>
             ) : (
               <>
@@ -225,6 +229,19 @@ const Header = ({ isAuthenticated = false }: HeaderProps) => {
                   onClick={() => handleNavigate("/contact")}
                 >
                   Contact
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => handleNavigate("/login")}
+                >
+                  Log in
+                </Button>
+                <Button
+                  className="justify-start bg-nextcare-primary hover:bg-nextcare-dark"
+                  onClick={() => handleNavigate("/register")}
+                >
+                  Sign up
                 </Button>
               </>
             )}

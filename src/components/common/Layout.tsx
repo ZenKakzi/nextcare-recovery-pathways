@@ -1,17 +1,18 @@
-
 import { ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import Header from "./Header";
 import Footer from "./Footer";
 
 interface LayoutProps {
   children: ReactNode;
-  isAuthenticated?: boolean;
 }
 
-const Layout = ({ children, isAuthenticated = false }: LayoutProps) => {
+const Layout = ({ children }: LayoutProps) => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Header isAuthenticated={isAuthenticated} />
+      <Header />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
