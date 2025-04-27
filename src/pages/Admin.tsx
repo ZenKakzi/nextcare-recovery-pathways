@@ -7,10 +7,24 @@ import { Button } from "@/components/ui/button";
 interface Patient {
   email: string;
   username?: string;
-  age?: string;
+  dateOfBirth?: string;
   gender?: string;
   password?: string;
   isAdmin?: boolean;
+}
+
+// Utility to calculate age from date string
+function calculateAge(dateOfBirth?: string): string | number {
+  if (!dateOfBirth) return "-";
+  const dob = new Date(dateOfBirth);
+  if (isNaN(dob.getTime())) return "-";
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
 }
 
 const Admin = () => {
@@ -97,9 +111,10 @@ const Admin = () => {
                       </td>
                       <td className="p-2 border">
                         <input
-                          className="border rounded px-2 py-1 w-16"
-                          name="age"
-                          value={editData.age || ""}
+                          className="border rounded px-2 py-1 w-32"
+                          type="date"
+                          name="dateOfBirth"
+                          value={editData.dateOfBirth || ""}
                           onChange={handleEditChange}
                         />
                       </td>
@@ -125,7 +140,7 @@ const Admin = () => {
                     <>
                       <td className="p-2 border">{patient.username}</td>
                       <td className="p-2 border">{patient.email}</td>
-                      <td className="p-2 border">{patient.age}</td>
+                      <td className="p-2 border">{calculateAge(patient.dateOfBirth)}</td>
                       <td className="p-2 border">{patient.gender}</td>
                       <td className="p-2 border">
                         <Button size="sm" onClick={() => handleEdit(idx)}>Edit</Button>
