@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/common/Layout";
 import OnboardingProgress from "@/components/onboarding/OnboardingProgress";
@@ -7,10 +6,12 @@ import MedicalConditionsForm from "@/components/onboarding/MedicalConditionsForm
 import HospitalizationHistoryForm from "@/components/onboarding/HospitalizationHistoryForm";
 import LifestyleForm from "@/components/onboarding/LifestyleForm";
 import OnboardingComplete from "@/components/onboarding/OnboardingComplete";
+import { useAuth } from "@/contexts/AuthContext";
 
 const TOTAL_STEPS = 5;
 
 const Onboarding = () => {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [userData, setUserData] = useState({
     basicInfo: {},
@@ -20,23 +21,34 @@ const Onboarding = () => {
   });
 
   const handleNext = (data: any) => {
+    let updatedUser = { ...user };
+
     switch (currentStep) {
       case 1:
-        setUserData(prev => ({ ...prev, basicInfo: data }));
+        updatedUser = { ...updatedUser, ...data };
         break;
       case 2:
-        setUserData(prev => ({ ...prev, medicalConditions: data }));
+        updatedUser = { ...updatedUser, medicalConditions: data.conditions || data };
         break;
       case 3:
-        setUserData(prev => ({ ...prev, hospitalizationHistory: data }));
+        updatedUser = { ...updatedUser, hospitalizationHistory: data };
         break;
       case 4:
-        setUserData(prev => ({ ...prev, lifestyle: data }));
+        updatedUser = { ...updatedUser, lifestyleData: data };
         break;
       default:
         break;
     }
-    
+
+    // Save to localStorage and update users array
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUsers = users.map((u: any) =>
+      u.email === user?.email ? { ...u, ...updatedUser } : u
+    );
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    setUserData(prev => ({ ...prev, [`step${currentStep}`]: data }));
     setCurrentStep(prev => prev + 1);
     window.scrollTo(0, 0);
   };

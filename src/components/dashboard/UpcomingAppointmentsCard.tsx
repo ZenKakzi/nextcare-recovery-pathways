@@ -36,21 +36,21 @@ const sampleDoctors: Doctor[] = [
   {
     id: "doc1",
     name: "Alina",
-    specialty: "Focuses on emotional support through music",
+    specialty: "Complex chronic conditions (CCC)",
     image: "https://imgs.search.brave.com/Ncpm9NKsiST09aV1tpDr73N9AkgBF7h6R7uTYLm-clM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNDc5/Mzc4Nzk4L3Bob3Rv/L3BvcnRyYWl0LW9m/LWZlbWFsZS1kb2N0/b3IuanBnP3M9NjEy/eDYxMiZ3PTAmaz0y/MCZjPVAtVzhLU0pC/WWhZajJSU3gxWmhm/ZjZGQ0d2dFJEQzNB/QXpveDhkZU1tZXc9",
     available: true,
   },
   {
     id: "doc2",
     name: "David Tune",
-    specialty: "Expert in sound therapy for anxiety reduction",
+    specialty: "Physical medicine & rehabilitation (PM&R) patients",
     image: "https://media.istockphoto.com/id/1327024466/photo/portrait-of-male-doctor-in-white-coat-and-stethoscope-standing-in-clinic-hall.jpg?s=612x612&w=0&k=20&c=49wqOwwuonk9f8NACL7M_5RosqQPFwJ8-dpmeo9AvQw=",
     available: true,
   },
   {
     id: "doc3",
     name: "LAURA HARMON",
-    specialty: "Specialist in postpartum stress relief",
+    specialty: "Allergists/Immunologists\n They treat immune system disorders such as asthma, eczema.",
     image: "https://img.freepik.com/free-photo/portrait-young-female-doctor-hospital_1303-17839.jpg",
     available: false,
   },
@@ -182,14 +182,18 @@ const UpcomingAppointmentsCard = ({ appointments, onSchedule }: UpcomingAppointm
                 <div className="flex-1">
                   <div className="font-semibold text-base">{doc.name}</div>
                   <div className="text-sm text-muted-foreground">{doc.specialty}</div>
+                  {!doc.available && (
+                    <span className="inline-block mt-2 px-3 py-1 rounded bg-blue-200 text-blue-700 font-medium text-sm">Unavailable</span>
+                  )}
                 </div>
-                <Button
-                  disabled={!doc.available}
-                  className="bg-nextcare-primary hover:bg-nextcare-dark"
-                  onClick={() => handleOpenDialog(doc)}
-                >
-                  {doc.available ? "Book" : "Unavailable"}
-                </Button>
+                {doc.available && (
+                  <Button
+                    className="bg-nextcare-primary hover:bg-nextcare-dark"
+                    onClick={() => handleOpenDialog(doc)}
+                  >
+                    Book
+                  </Button>
+                )}
               </div>
             ))}
           </div>

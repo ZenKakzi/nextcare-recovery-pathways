@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/common/Layout";
 import RiskScoreCard from "@/components/dashboard/RiskScoreCard";
@@ -9,6 +9,7 @@ import DailyInsights from "@/components/dashboard/DailyInsights";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { calculateOverallRiskScore, getRiskLevel } from "@/utils/riskScoreCalculator";
 
 const ARTICLE1_TITLE = "Eat for a Happy Heart: Delicious Dishes That Keep Your Ticker Ticking";
 const ARTICLE1_BODY = `Hello there, proud owner of a heart that needs a bit of VIP treatment!
@@ -75,10 +76,8 @@ const Dashboard = () => {
   const [showArticle, setShowArticle] = useState<{title: string, body: string} | null>(null);
   const carePlanRef = useRef<HTMLDivElement>(null);
   const resourcesRef = useRef<HTMLDivElement>(null);
-
-  // Sample data
-  const riskScore = 42; // 0-100
-  const riskFactors = [
+  const [riskScore, setRiskScore] = useState(42); // Default risk score
+  const [riskFactors, setRiskFactors] = useState([
     {
       factor: "Recent hospitalization",
       impact: "High",
@@ -99,7 +98,96 @@ const Dashboard = () => {
       impact: "Low",
       description: "You've attended all scheduled follow-up appointments"
     }
-  ];
+  ]);
+
+  // Calculate risk score based on user data
+  useEffect(() => {
+    if (user) {
+      // Get medical conditions from user data
+      const conditions = Array.isArray((user as any)?.medicalConditions)
+        ? (user as any).medicalConditions
+        : [];
+      
+      // Get hospitalization history from user data
+      const hospitalizationData = (user as any)?.hospitalizationHistory || {};
+      
+      // Get lifestyle data from user data
+      const lifestyleData = (user as any)?.lifestyleData || {};
+
+      // Debug logs
+      console.log("User in dashboard:", user);
+      console.log("User conditions:", conditions);
+      console.log("User hospitalizationData:", hospitalizationData);
+      console.log("User lifestyleData:", lifestyleData);
+
+      // Calculate risk score
+      const calculatedRiskScore = calculateOverallRiskScore(
+        conditions,
+        hospitalizationData,
+        lifestyleData
+      );
+      console.log("Calculated risk score:", calculatedRiskScore);
+      
+      setRiskScore(calculatedRiskScore);
+      
+      // Generate risk factors based on conditions
+      const newRiskFactors = [];
+      
+      // Add risk factors based on medical conditions
+      if (conditions.includes("diabetes")) {
+        newRiskFactors.push({
+          factor: "Diabetes",
+          impact: "Medium",
+          description: "Diabetes increases your risk of complications and readmission"
+        });
+      }
+      
+      if (conditions.includes("heart_disease")) {
+        newRiskFactors.push({
+          factor: "Heart Disease",
+          impact: "High",
+          description: "Cardiovascular conditions significantly increase readmission risk"
+        });
+      }
+      
+      if (conditions.includes("copd")) {
+        newRiskFactors.push({
+          factor: "COPD",
+          impact: "High",
+          description: "Respiratory conditions require careful management to prevent readmission"
+        });
+      }
+      
+      // Add risk factor for recent hospitalization if applicable
+      if (hospitalizationData.recentHospitalization === "yes") {
+        newRiskFactors.push({
+          factor: "Recent hospitalization",
+          impact: "High",
+          description: "You were hospitalized within the last 30 days"
+        });
+      }
+      
+      // Add risk factor for lifestyle if applicable
+      if (lifestyleData.smokingStatus === "current") {
+        newRiskFactors.push({
+          factor: "Current smoker",
+          impact: "Medium",
+          description: "Smoking increases your risk of complications and readmission"
+        });
+      }
+      
+      // If no specific risk factors were identified, add a generic one
+      if (newRiskFactors.length === 0) {
+        newRiskFactors.push({
+          factor: "General health assessment",
+          impact: getRiskLevel(calculatedRiskScore).level,
+          description: "Based on your overall health profile"
+        });
+      }
+      
+      setRiskFactors(newRiskFactors);
+    }
+  }, [user]);
   
   const appointmentsData = [
     {
@@ -157,11 +245,14 @@ const Dashboard = () => {
   return (
     <Layout isAuthenticated={true} scrollToCarePlan={scrollToCarePlan} scrollToResources={scrollToResources}>
       <div className="nextcare-container py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Welcome Back, {user?.username || "User"}</h1>
-          <p className="text-muted-foreground">Here's an overview of your health status and care plan.</p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Welcome back, {user?.username || "Patient"}</h1>
+          </div>
         </div>
+        
         <DailyInsights />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Risk Score */}
           <div className="xl:col-span-1">
@@ -199,11 +290,13 @@ const Dashboard = () => {
 
       {/* Article Dialog */}
       <Dialog open={!!showArticle} onOpenChange={() => setShowArticle(null)}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="w-full max-w-xl h-[500px] flex flex-col">
           <DialogHeader>
             <DialogTitle>{showArticle?.title}</DialogTitle>
           </DialogHeader>
-          <div className="whitespace-pre-line text-sm">{showArticle?.body}</div>
+          <div className="whitespace-pre-line text-sm overflow-y-auto flex-1">
+            {showArticle?.body}
+          </div>
         </DialogContent>
       </Dialog>
 

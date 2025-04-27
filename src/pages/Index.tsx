@@ -285,11 +285,13 @@ const Index = () => {
       </section>
 
       <Dialog open={!!showArticle} onOpenChange={() => setShowArticle(null)}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="w-full max-w-xl h-[500px] flex flex-col">
           <DialogHeader>
             <DialogTitle>{showArticle?.title}</DialogTitle>
           </DialogHeader>
-          <div className="whitespace-pre-line text-sm">{showArticle?.body}</div>
+          <div className="whitespace-pre-line text-sm overflow-y-auto flex-1">
+            {showArticle?.body}
+          </div>
         </DialogContent>
       </Dialog>
     </Layout>

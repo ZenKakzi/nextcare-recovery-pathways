@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, ArrowRight, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getRiskLevel } from "@/utils/riskScoreCalculator";
 
 interface RiskScoreCardProps {
   riskScore: number;
@@ -15,19 +15,28 @@ interface RiskScoreCardProps {
 }
 
 const RiskScoreCard = ({ riskScore, onViewDetails }: RiskScoreCardProps) => {
-  const getRiskLevel = (score: number) => {
-    if (score < 30) return { level: "Low", color: "text-nextcare-success", bgColor: "bg-nextcare-success/20" };
-    if (score < 60) return { level: "Moderate", color: "text-nextcare-warning", bgColor: "bg-nextcare-warning/20" };
-    return { level: "High", color: "text-nextcare-error", bgColor: "bg-nextcare-error/20" };
-  };
-
+  // Use the risk level from our utility function
   const { level, color, bgColor } = getRiskLevel(riskScore);
+
+  // Get risk description based on level
+  const getRiskDescription = () => {
+    switch (level) {
+      case "Low":
+        return "Your current health profile suggests good stability with lower risk of complications.";
+      case "Moderate":
+        return "Your health profile indicates some factors that could affect your stability.";
+      case "High":
+        return "Your health profile shows significant factors that require careful management.";
+      default:
+        return "Your personalized health stability assessment.";
+    }
+  };
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Readmission Risk Score</CardTitle>
+          <CardTitle className="text-lg">Health Stability Score</CardTitle>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -36,13 +45,13 @@ const RiskScoreCard = ({ riskScore, onViewDetails }: RiskScoreCardProps) => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p>This score represents your estimated risk of hospital readmission based on your health profile data.</p>
+                <p>This score represents your estimated health stability based on your health profile data.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
         <CardDescription>
-          Your personalized risk assessment
+          Your personalized health stability assessment
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -78,20 +87,18 @@ const RiskScoreCard = ({ riskScore, onViewDetails }: RiskScoreCardProps) => {
             </svg>
             <div className="absolute inset-0 flex items-center justify-center flex-col">
               <span className="text-4xl font-bold">{riskScore}%</span>
-              <span className={`text-sm font-medium ${color}`}>{level} Risk</span>
+              <span className={`text-sm font-medium ${color}`}>{level} Stability</span>
             </div>
           </div>
           
-          <div className={`w-full ${bgColor} rounded-md p-4 flex items-start space-x-3`}>
+          <div className="flex items-center space-x-2">
             <AlertTriangle className={`h-5 w-5 mt-0.5 ${color}`} />
             <div>
               <p className={`font-medium ${color}`}>
-                {level} Risk Assessment
+                {level} Health Stability
               </p>
               <p className="text-sm mt-1">
-                {level === "Low" && "Your current health profile suggests a lower risk of hospital readmission."}
-                {level === "Moderate" && "Your health profile indicates some risk factors that could lead to readmission."}
-                {level === "High" && "Your health profile shows significant risk factors that require careful management."}
+                {getRiskDescription()}
               </p>
             </div>
           </div>
@@ -101,7 +108,7 @@ const RiskScoreCard = ({ riskScore, onViewDetails }: RiskScoreCardProps) => {
             variant="outline" 
             className="mt-2"
           >
-            View Risk Details <ArrowRight className="ml-2 h-4 w-4" />
+            View Health Details <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </CardContent>

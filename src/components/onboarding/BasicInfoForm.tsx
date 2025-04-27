@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -59,13 +58,16 @@ const BasicInfoForm = ({ onNext }: BasicInfoFormProps) => {
       // In a real app, this would connect to an API
       console.log("Form submitted:", values);
       
+      // Extract dateOfBirth and gender to update user profile
+      const { dateOfBirth, gender } = values;
+      
       setTimeout(() => {
         setLoading(false);
         toast({
           title: "Basic information saved",
           description: "Your profile information has been updated.",
         });
-        onNext(values);
+        onNext({ ...values, dateOfBirth, gender });
       }, 1000);
     } catch (error) {
       setLoading(false);

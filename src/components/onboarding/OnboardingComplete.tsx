@@ -1,22 +1,32 @@
-
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, ArrowRight } from "lucide-react";
+import { getRiskLevel } from "@/utils/riskScoreCalculator";
 
 interface OnboardingCompleteProps {
   riskScore?: number;
+  userData?: any;
 }
 
-const OnboardingComplete = ({ riskScore = 42 }: OnboardingCompleteProps) => {
+const OnboardingComplete = ({ riskScore = 42, userData = {} }: OnboardingCompleteProps) => {
   const navigate = useNavigate();
 
-  const getRiskLevel = (score: number) => {
-    if (score < 30) return { level: "Low", color: "text-nextcare-success" };
-    if (score < 60) return { level: "Moderate", color: "text-nextcare-warning" };
-    return { level: "High", color: "text-nextcare-error" };
-  };
-
+  // Use the risk level from our utility function
   const { level, color } = getRiskLevel(riskScore);
+
+  // Get risk description based on level
+  const getRiskDescription = () => {
+    switch (level) {
+      case "Low":
+        return "Your health profile suggests a lower risk of hospital readmission. Continue following your care plan to maintain this status.";
+      case "Moderate":
+        return "Your health profile indicates some risk factors that could lead to readmission. We've created a personalized care plan to help manage these factors.";
+      case "High":
+        return "Your health profile shows significant risk factors that require careful management. Our comprehensive care plan will help address these concerns.";
+      default:
+        return "Your personalized care plan has been created based on this assessment.";
+    }
+  };
 
   return (
     <div className="text-center space-y-6">
@@ -32,7 +42,7 @@ const OnboardingComplete = ({ riskScore = 42 }: OnboardingCompleteProps) => {
         Thank you for providing your health information. We've created your personalized care plan based on your profile.
       </p>
       
-      <div className="bg-card border rounded-lg p-6 max-w-sm mx-auto">
+      <div className="bg-muted/30 p-6 rounded-lg max-w-md mx-auto">
         <h3 className="font-medium text-lg mb-2">Your Readmission Risk Assessment</h3>
         
         <div className="flex items-center justify-center mb-4">
@@ -73,7 +83,7 @@ const OnboardingComplete = ({ riskScore = 42 }: OnboardingCompleteProps) => {
         </div>
         
         <p className="text-sm text-muted-foreground">
-          Your personalized care plan has been created based on this assessment.
+          {getRiskDescription()}
         </p>
       </div>
       

@@ -71,6 +71,7 @@ function calculateAge(dateOfBirth?: string): string | number {
 
 const Profile = () => {
   const { user } = useAuth();
+  console.log("User in profile:", user); // Debug log
   // Type guard for medicalConditions
   const conditions: string[] = Array.isArray((user as any)?.medicalConditions)
     ? (user as any).medicalConditions
