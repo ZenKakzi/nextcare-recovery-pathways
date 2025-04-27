@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, BarChart3, CalendarClock, ShieldCheck } from 
 import HealthResourceCard from "@/components/dashboard/HealthResourceCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
+import { Calendar as DayCalendar } from "@/components/ui/calendar";
 
 const ARTICLE1_TITLE = "Eat for a Happy Heart: Delicious Dishes That Keep Your Ticker Ticking";
 const ARTICLE1_BODY = `Hello there, proud owner of a heart that needs a bit of VIP treatment!
@@ -14,9 +15,25 @@ const ARTICLE2_BODY = `Hey there, my fellow warriors with sensitive little heart
  ... (rest of article 2) ...`;
 const YOUTUBE_URL = "https://youtu.be/XprmCVflDTY";
 
+const dailyTasks = {
+  '2025-05-01': 'Walk 3km', // Thursday
+  '2025-05-02': 'Yoga session', // Friday
+  '2025-05-03': 'Rest day', // Saturday (disabled)
+  '2025-05-06': 'Strength training', // Tuesday
+  '2025-05-07': 'Cycling 5km', // Wednesday
+  '2025-05-08': 'Swim 30min', // Thursday
+  '2025-05-09': 'Meditation 20min', // Friday
+  '2025-05-13': 'Cardio workout', // Tuesday
+  '2025-05-14': 'Pilates', // Wednesday
+  '2025-05-15': 'Walk 5km', // Thursday
+  '2025-05-16': 'Yoga session', // Friday
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const [showArticle, setShowArticle] = useState<{title: string, body: string} | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   const resourcesData = [
     {
@@ -129,7 +146,7 @@ const Index = () => {
                           <p className="text-sm text-muted-foreground">May 3, 2025</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">View</Button>
+                      <Button variant="ghost" size="sm" onClick={() => setCalendarOpen(true)}>View</Button>
                     </div>
                     
                     <div className="flex items-center justify-between p-3 border rounded-md">
@@ -292,6 +309,29 @@ const Index = () => {
           <div className="whitespace-pre-line text-sm overflow-y-auto flex-1">
             {showArticle?.body}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Recovery Calendar</DialogTitle>
+          </DialogHeader>
+          <div className="font-semibold mb-2">Your Recovery Calendar</div>
+          <DayCalendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            month={new Date(2025, 4, 1)} // May 2025
+            fromDate={new Date(2025, 4, 1)}
+            toDate={new Date(2025, 4, 31)}
+            disabled={(date) => date.getDay() === 0 || date.getDay() === 6} // Disable weekends
+          />
+          {selectedDate && (
+            <div className="mt-4 p-3 border rounded bg-muted">
+              <span className="font-medium">{selectedDate.toLocaleDateString()}</span>: {dailyTasks[selectedDate.toISOString().slice(0, 10)] || 'No special task for this day.'}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </Layout>

@@ -10,6 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { calculateOverallRiskScore, getRiskLevel } from "@/utils/riskScoreCalculator";
+import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import Logo from "@/assets/logo.svg"; // Adjust path if needed
+import { useLocation } from "react-router-dom";
 
 const ARTICLE1_TITLE = "Eat for a Happy Heart: Delicious Dishes That Keep Your Ticker Ticking";
 const ARTICLE1_BODY = `Hello there, proud owner of a heart that needs a bit of VIP treatment!
@@ -99,6 +102,7 @@ const Dashboard = () => {
       description: "You've attended all scheduled follow-up appointments"
     }
   ]);
+  const location = useLocation();
 
   // Calculate risk score based on user data
   useEffect(() => {
@@ -189,6 +193,14 @@ const Dashboard = () => {
     }
   }, [user]);
   
+  useEffect(() => {
+    if (location.search.includes("scroll=careplan") && carePlanRef.current) {
+      setTimeout(() => {
+        carePlanRef.current.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    }
+  }, [location]);
+  
   const appointmentsData = [
     {
       id: "apt1",
@@ -197,7 +209,9 @@ const Dashboard = () => {
       date: "May 3, 2025",
       time: "10:30 AM",
       location: "Central Hospital, Room 302",
-      type: "in-person" as const
+      type: "in-person" as const,
+      image: "https://randomuser.me/api/portraits/women/44.jpg",
+      room: "302",
     }
   ];
   
@@ -264,7 +278,7 @@ const Dashboard = () => {
           
           {/* Care Plan */}
           <div className="xl:col-span-1" ref={carePlanRef}>
-            <CarePlanCard completedTasks={3} totalTasks={6} />
+            <CarePlanCard />
           </div>
           
           {/* Upcoming Appointments */}
@@ -278,9 +292,7 @@ const Dashboard = () => {
           {/* Resources */}
           <div className="md:col-span-2 xl:col-span-3" ref={resourcesRef}>
             <HealthResourceCard resources={resourcesData} onResourceClick={(resource) => {
-              if (resource.url) {
-                window.open(resource.url, "_blank");
-              } else if (resource.body) {
+              if (resource.body) {
                 setShowArticle({title: resource.title, body: resource.body});
               }
             }} />

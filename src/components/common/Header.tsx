@@ -67,7 +67,13 @@ const Header = ({ scrollToCarePlan, scrollToResources }: HeaderProps) => {
               <Button
                 variant="ghost"
                 className="font-medium"
-                onClick={scrollToCarePlan ? scrollToCarePlan : () => navigate("/care-plan")}
+                onClick={() => {
+                  if (window.location.pathname === "/dashboard" && scrollToCarePlan) {
+                    scrollToCarePlan();
+                  } else {
+                    navigate("/dashboard?scroll=careplan");
+                  }
+                }}
               >
                 Care Plan
               </Button>
@@ -209,7 +215,13 @@ const Header = ({ scrollToCarePlan, scrollToResources }: HeaderProps) => {
                 <Button
                   variant="ghost"
                   className="justify-start"
-                  onClick={scrollToCarePlan ? scrollToCarePlan : () => handleNavigate("/care-plan")}
+                  onClick={() => {
+                    if (window.location.pathname === "/dashboard" && scrollToCarePlan) {
+                      scrollToCarePlan();
+                    } else {
+                      handleNavigate("/dashboard?scroll=careplan");
+                    }
+                  }}
                 >
                   Care Plan
                 </Button>

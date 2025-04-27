@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Calendar as DateCalendar } from "@/components/ui/calendar";
 import { addDays, isSameDay, parseISO } from "date-fns";
+import { Calendar as DayCalendar } from "@/components/ui/calendar";
 
 interface Appointment {
   id: string;
@@ -55,6 +56,16 @@ const sampleDoctors: Doctor[] = [
     available: false,
   },
 ];
+
+const dailyTasks = {
+  '2025-05-01': 'Walk 3km',
+  '2025-05-02': 'Yoga session',
+  '2025-05-03': 'Meditation 20min',
+  '2025-05-04': 'Swim 30min',
+  '2025-05-05': 'Cycling 5km',
+  '2025-05-06': 'Strength training',
+  '2025-05-07': 'Rest day',
+};
 
 const DoctorProfileDialog = ({ doctor, open, onClose, onBook }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -135,6 +146,8 @@ const UpcomingAppointmentsCard = ({ appointments, onSchedule }: UpcomingAppointm
   const [showDoctors, setShowDoctors] = useState(true);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const handleBook = (doctor: Doctor) => {
     const newAppointment: Appointment = {

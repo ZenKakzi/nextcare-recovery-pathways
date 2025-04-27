@@ -1,7 +1,8 @@
 import Layout from "@/components/common/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
-import { Shield, HeartPulse, Brain, Droplets, Bone, Stethoscope, User, Utensils, Smile } from "lucide-react";
+import { Shield, HeartPulse, Brain, Droplets, Bone, Stethoscope, User, Utensils, Smile, Plus } from "lucide-react";
+import { useRef, useState } from "react";
 
 const SYSTEMS = [
   { key: "endocrine", label: "Endocrine system", icon: <Utensils className="h-5 w-5 text-yellow-400" />, color: "bg-yellow-300" },
@@ -71,6 +72,23 @@ function calculateAge(dateOfBirth?: string): string | number {
 
 const Profile = () => {
   const { user } = useAuth();
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setUploadedFiles(prev => [...prev, ...Array.from(e.target.files)]);
+    }
+  };
+
+  const handlePlusClick = () => {
+    alert('This is the place where you can see your results as documents.');
+  };
+
+  const handleDeleteFile = (idx: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== idx));
+  };
+
   console.log("User in profile:", user); // Debug log
   // Type guard for medicalConditions
   const conditions: string[] = Array.isArray((user as any)?.medicalConditions)
@@ -80,42 +98,89 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="nextcare-container py-8 max-w-lg mx-auto">
-        <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-        <div className="bg-white rounded-lg shadow p-6 border mb-8">
-          <div className="mb-4">
-            <span className="block text-muted-foreground text-sm mb-1">Username</span>
-            <span className="font-medium text-lg">{user?.username || "-"}</span>
-          </div>
-          <div className="mb-4">
-            <span className="block text-muted-foreground text-sm mb-1">Email</span>
-            <span className="font-medium text-lg">{user?.email || "-"}</span>
-          </div>
-          <div className="mb-4">
-            <span className="block text-muted-foreground text-sm mb-1">Age</span>
-            <span className="font-medium text-lg">{calculateAge(user?.dateOfBirth)}</span>
-          </div>
-          <div className="mb-4">
-            <span className="block text-muted-foreground text-sm mb-1">Gender</span>
-            <span className="font-medium text-lg">{user?.gender || "-"}</span>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6 border">
-          <h2 className="text-lg font-semibold mb-4">Health systems & general overview</h2>
-          <div className="space-y-4">
-            {SYSTEMS.map(sys => (
-              <div key={sys.key} className="flex items-center gap-4">
-                <div className={`w-8 h-8 flex items-center justify-center rounded-full ${sys.color}`}>{sys.icon}</div>
-                <div className="flex-1">
-                  <div className="font-medium">{sys.label}</div>
-                  <Progress value={systemScores[sys.key]} className="h-2 mt-1" />
-                </div>
-                <div className="flex items-center gap-1 min-w-[60px] justify-end">
-                  <span className="font-bold text-lg">{systemScores[sys.key].toFixed(1)}</span>
-                  <span className="text-xs text-muted-foreground">of 10</span>
-                </div>
+      <div className="nextcare-container py-8 max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-8 justify-center">
+          {/* Left: Profile Info (centered) */}
+          <div className="flex-1 min-w-0 max-w-lg mx-auto md:mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">My Profile</h1>
+              <button
+                className="flex items-center justify-center w-9 h-9 rounded-full bg-nextcare-primary text-white hover:bg-nextcare-dark focus:outline-none"
+                title="See results as documents"
+                onClick={handlePlusClick}
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6 border mb-8">
+              <div className="mb-4">
+                <span className="block text-muted-foreground text-sm mb-1">Username</span>
+                <span className="font-medium text-lg">{user?.username || "-"}</span>
               </div>
-            ))}
+              <div className="mb-4">
+                <span className="block text-muted-foreground text-sm mb-1">Email</span>
+                <span className="font-medium text-lg">{user?.email || "-"}</span>
+              </div>
+              <div className="mb-4">
+                <span className="block text-muted-foreground text-sm mb-1">Age</span>
+                <span className="font-medium text-lg">{calculateAge(user?.dateOfBirth)}</span>
+              </div>
+              <div className="mb-4">
+                <span className="block text-muted-foreground text-sm mb-1">Gender</span>
+                <span className="font-medium text-lg">{user?.gender || "-"}</span>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6 border">
+              <h2 className="text-lg font-semibold mb-4">Health systems & general overview</h2>
+              <div className="space-y-4">
+                {SYSTEMS.map(sys => (
+                  <div key={sys.key} className="flex items-center gap-4">
+                    <div className={`w-8 h-8 flex items-center justify-center rounded-full ${sys.color}`}>{sys.icon}</div>
+                    <div className="flex-1">
+                      <div className="font-medium">{sys.label}</div>
+                      <Progress value={systemScores[sys.key]} className="h-2 mt-1" />
+                    </div>
+                    <div className="flex items-center gap-1 min-w-[60px] justify-end">
+                      <span className="font-bold text-lg">{systemScores[sys.key].toFixed(1)}</span>
+                      <span className="text-xs text-muted-foreground">of 10</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Right: Upload Document */}
+          <div className="w-full md:w-96 flex-shrink-0 md:ml-auto">
+            <div className="bg-white rounded-lg shadow p-6 border mb-8">
+              <h2 className="text-lg font-semibold mb-4">Upload Document</h2>
+              <p className="text-muted-foreground mb-2">Upload your personal documents or previous results from any hospital here.</p>
+              <input
+                type="file"
+                multiple
+                ref={fileInputRef}
+                className="mb-4"
+                onChange={handleFileChange}
+              />
+              {uploadedFiles.length > 0 && (
+                <div className="mt-2">
+                  <h3 className="font-medium mb-2">Uploaded Files:</h3>
+                  <ul className="list-disc pl-5">
+                    {uploadedFiles.map((file, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <span>{file.name}</span>
+                        <button
+                          className="text-red-600 hover:underline text-xs px-2 py-1 rounded"
+                          onClick={() => handleDeleteFile(idx)}
+                          title="Delete file"
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
