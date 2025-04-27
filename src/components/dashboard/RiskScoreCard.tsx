@@ -15,8 +15,40 @@ interface RiskScoreCardProps {
 }
 
 const RiskScoreCard = ({ riskScore, onViewDetails }: RiskScoreCardProps) => {
-  // Use the risk level from our utility function
+  const healthStabilityScore = 100 - riskScore;
   const { level, color, bgColor } = getRiskLevel(riskScore);
+
+  // Determine color, emoji, and label based on healthStabilityScore
+  let stabilityColor = "";
+  let stabilityEmoji = "";
+  let stabilityLabel = "";
+  let clinicalInterpretation = "";
+  if (healthStabilityScore >= 95) {
+    stabilityColor = "text-green-600";
+    stabilityEmoji = "🟢";
+    stabilityLabel = "Minimal";
+    clinicalInterpretation = "No significant risk; optimal stability.";
+  } else if (healthStabilityScore >= 81) {
+    stabilityColor = "text-yellow-500";
+    stabilityEmoji = "🟡";
+    stabilityLabel = "Low";
+    clinicalInterpretation = "Slight risk; monitor for minor changes.";
+  } else if (healthStabilityScore >= 51) {
+    stabilityColor = "text-orange-500";
+    stabilityEmoji = "🟠";
+    stabilityLabel = "Moderate";
+    clinicalInterpretation = "Elevated risk; requires intervention.";
+  } else if (healthStabilityScore >= 1) {
+    stabilityColor = "text-red-600";
+    stabilityEmoji = "🔴";
+    stabilityLabel = "High";
+    clinicalInterpretation = "Urgent action needed; unstable.";
+  } else {
+    stabilityColor = "text-black";
+    stabilityEmoji = "⚫";
+    stabilityLabel = "Critical";
+    clinicalInterpretation = "Immediate medical attention required.";
+  }
 
   // Get risk description based on level
   const getRiskDescription = () => {
@@ -74,31 +106,25 @@ const RiskScoreCard = ({ riskScore, onViewDetails }: RiskScoreCardProps) => {
                 stroke="currentColor"
                 strokeWidth="10"
                 strokeDasharray="282.7"
-                strokeDashoffset={282.7 - (282.7 * riskScore) / 100}
-                className={
-                  riskScore < 30
-                    ? "text-nextcare-success"
-                    : riskScore < 60
-                    ? "text-nextcare-warning"
-                    : "text-nextcare-error"
-                }
+                strokeDashoffset={282.7 - (282.7 * healthStabilityScore) / 100}
+                className={stabilityColor}
                 transform="rotate(-90 50 50)"
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center flex-col">
-              <span className="text-4xl font-bold">{riskScore}%</span>
-              <span className={`text-sm font-medium ${color}`}>{level} Stability</span>
+              <span className="text-4xl font-bold">{healthStabilityScore}%</span>
+              <span className={`text-sm font-medium ${stabilityColor}`}>{stabilityEmoji} {stabilityLabel} Stability</span>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
-            <AlertTriangle className={`h-5 w-5 mt-0.5 ${color}`} />
+            <AlertTriangle className={`h-5 w-5 mt-0.5 ${stabilityColor}`} />
             <div>
-              <p className={`font-medium ${color}`}>
-                {level} Health Stability
+              <p className={`font-medium ${stabilityColor}`}>
+                {stabilityLabel} Health Stability
               </p>
               <p className="text-sm mt-1">
-                {getRiskDescription()}
+                {clinicalInterpretation}
               </p>
             </div>
           </div>

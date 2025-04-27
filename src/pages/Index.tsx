@@ -285,7 +285,7 @@ const Index = () => {
       </section>
 
       <Dialog open={!!showArticle} onOpenChange={() => setShowArticle(null)}>
-        <DialogContent className="w-full max-w-xl h-[500px] flex flex-col">
+        <DialogContent className="w-full max-w-xl h-[500px] max-h-[90vh] flex flex-col rounded-lg !fixed !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2">
           <DialogHeader>
             <DialogTitle>{showArticle?.title}</DialogTitle>
           </DialogHeader>
